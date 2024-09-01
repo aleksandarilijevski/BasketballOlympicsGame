@@ -1,6 +1,6 @@
 ﻿using BasketballOlympicsGame.Enums;
 using BasketballOlympicsGame.Models;
-using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BasketballOlympicsGame
 {
@@ -14,7 +14,7 @@ namespace BasketballOlympicsGame
 
         static void Main(string[] args)
         {
-            LoadDataManually();
+            LoadTeams();
             PlayMatch();
             PressAnyKeyToContinue();
 
@@ -120,8 +120,8 @@ namespace BasketballOlympicsGame
 
             Console.WriteLine("Polufinale : \n");
 
-            Tournament semiFinals = RandomMatchState(tournamentDG1.Winner, tournamentDG2.Winner);
-            Tournament semiFinals2 = RandomMatchState(tournamentEF1.Winner, tournamentEF2.Winner);
+            Tournament semiFinals = RandomMatchState(tournamentDG1.Winner, tournamentEF1.Winner);
+            Tournament semiFinals2 = RandomMatchState(tournamentEF2.Winner, tournamentDG2.Winner);
 
             Console.WriteLine($"{semiFinals.Winner.Name} VS {semiFinals.Loser.Name}\n Winner : {semiFinals.Winner.Name}\n Score ({semiFinals.Winner.ScoredPoints}:{semiFinals.Loser.ScoredPoints})\n");
             Console.WriteLine($"{semiFinals2.Winner.Name} VS {semiFinals2.Loser.Name}\n Winner : {semiFinals2.Winner.Name}\n Score ({semiFinals2.Winner.ScoredPoints}:{semiFinals2.Loser.ScoredPoints})\n");
@@ -180,33 +180,33 @@ namespace BasketballOlympicsGame
             } while (alreadyPlayed == true);
         }
 
-        public static void DisplayHats(List<Team> sesirD, List<Team> sesirE, List<Team> sesirF, List<Team> sesirG)
+        public static void DisplayHats(List<Team> hatD, List<Team> hatE, List<Team> hatF, List<Team> hatG)
         {
             Console.WriteLine("Sesiri : ");
 
             Console.WriteLine();
 
             Console.WriteLine("Sesir D");
-            Console.WriteLine(sesirD[0].Name);
-            Console.WriteLine(sesirD[1].Name);
+            Console.WriteLine(hatD[0].Name);
+            Console.WriteLine(hatD[1].Name);
 
             Console.WriteLine();
 
             Console.WriteLine("Sesir E");
-            Console.WriteLine(sesirE[0].Name);
-            Console.WriteLine(sesirE[1].Name);
+            Console.WriteLine(hatE[0].Name);
+            Console.WriteLine(hatE[1].Name);
 
             Console.WriteLine();
 
             Console.WriteLine("Sesir F");
-            Console.WriteLine(sesirF[0].Name);
-            Console.WriteLine(sesirF[1].Name);
+            Console.WriteLine(hatF[0].Name);
+            Console.WriteLine(hatF[1].Name);
 
             Console.WriteLine();
 
             Console.WriteLine("Sesir G");
-            Console.WriteLine(sesirG[0].Name);
-            Console.WriteLine(sesirG[1].Name);
+            Console.WriteLine(hatG[0].Name);
+            Console.WriteLine(hatG[1].Name);
         }
 
         public static void DisplayTop3Teams(List<Team> top3Teams)
@@ -234,6 +234,7 @@ namespace BasketballOlympicsGame
                 Console.WriteLine("Losses : " + team.Losses);
                 Console.WriteLine("Points : " + team.Points);
                 Console.WriteLine("Total scored points : " + team.TotalScoredPoints);
+                Console.WriteLine("Total received points : " + team.TotalReceivedPoints);
                 Console.WriteLine("Kos razlika : " + (team.TotalScoredPoints - team.TotalReceivedPoints));
                 Console.WriteLine("------------------------------------------------------");
                 ranking++;
@@ -376,6 +377,48 @@ namespace BasketballOlympicsGame
             }
         }
 
+        public static double CalculateTeamFrom(string isoCode)
+        {
+            double form = 0.0;
+
+            Dictionary<string, List<MatchResult>> matchResults = LoadExibitions();
+            List<MatchResult> teamMatches = matchResults[isoCode];
+
+            foreach (MatchResult matchResult in teamMatches)
+            {
+                string[] result = matchResult.Result.Split('-');
+                int pointDifference = int.Parse(result[0]) - int.Parse(result[1]);
+                form += pointDifference;
+            }
+
+            return form;
+        }
+
+        public static Team CalculateWinChance(Team host, Team guest)
+        {
+            List<Team> teams = new List<Team>();
+
+            double hostChance = (1.0 / host.FIBARanking) + host.Form;
+            double guestChance = (1.0 / guest.FIBARanking) + guest.Form;
+
+            double totalChance = hostChance + guestChance;
+
+            double hostWinChance = hostChance / totalChance;
+            double guestWinChance = guestChance / totalChance;
+
+            Random random = new Random();
+            double roll = random.NextDouble();
+
+            if (roll < hostWinChance)
+            {
+                return host;
+            }
+            else
+            {
+                return guest;
+            }
+        }
+
         public static Tournament RandomMatchState(Team host, Team guest)
         {
             MatchState matchState;
@@ -383,54 +426,51 @@ namespace BasketballOlympicsGame
 
             matchState = (MatchState)randomMatchState;
 
+            Tournament tournamentHistory = null;
             Tournament tournament = null;
-            Tournament tournament2 = null;
-
-            Team hostCopy = host.Clone();
-            Team guestCopy = guest.Clone();
 
             switch (matchState)
             {
                 case MatchState.Win:
-                    tournament = new Tournament { Winner = hostCopy, Loser = guestCopy };
-                    tournament2 = new Tournament { Winner = host, Loser = guest };
+                    tournamentHistory = new Tournament { Winner = host.Clone(), Loser = guest.Clone() };
+                    tournament = new Tournament { Winner = host, Loser = guest };
 
-                    tournament = ApplyStats(tournament);
-                    ApplyStats(tournament2);
+                    tournamentHistory = ApplyStats(tournamentHistory);
+                    ApplyStats(tournament);
                     break;
 
                 case MatchState.Lose:
-                    tournament = new Tournament { Winner = guestCopy, Loser = hostCopy };
-                    tournament2 = new Tournament { Winner = guest, Loser = host };
+                    tournamentHistory = new Tournament { Winner = guest.Clone(), Loser = host.Clone() };
+                    tournament = new Tournament { Winner = guest, Loser = host };
 
-                    tournament = ApplyStats(tournament);
-                    ApplyStats(tournament2);
+                    tournamentHistory = ApplyStats(tournamentHistory);
+                    ApplyStats(tournament);
                     break;
 
                 case MatchState.Surrend:
-                    tournament = new Tournament { Winner = hostCopy, Loser = guestCopy, Surrender = true };
-                    tournament2 = new Tournament { Winner = host, Loser = guest, Surrender = true };
+                    tournamentHistory = new Tournament { Winner = host.Clone(), Loser = guest.Clone(), Surrender = true };
+                    tournament = new Tournament { Winner = host, Loser = guest, Surrender = true };
 
-                    tournament = ApplyStats(tournament);
-                    ApplyStats(tournament2);
+                    tournamentHistory = ApplyStats(tournamentHistory);
+                    ApplyStats(tournament);
                     break;
             }
 
-            if (tournament.Loser.ScoredPoints > tournament.Winner.ScoredPoints)
+            if (tournamentHistory.Loser.ScoredPoints > tournamentHistory.Winner.ScoredPoints)
             {
-                Team teamTemp = tournament.Winner;
+                Team teamTemp = tournamentHistory.Winner;
+
+                tournamentHistory.Winner = tournamentHistory.Loser;
+                tournamentHistory.Loser = teamTemp;
 
                 tournament.Winner = tournament.Loser;
                 tournament.Loser = teamTemp;
 
-                tournament2.Winner = tournament2.Loser;
-                tournament2.Loser = teamTemp;
-
             }
 
-            TournamentHistory.Add(tournament);
+            TournamentHistory.Add(tournamentHistory);
 
-            return tournament;
+            return tournamentHistory;
         }
 
         public static Tournament ApplyStats(Tournament tournament)
@@ -450,6 +490,16 @@ namespace BasketballOlympicsGame
                 tournament.Loser.ScoredPoints = tournament.Winner.ReceivedPoints;
 
                 return tournament;
+            }
+
+            Team winner = CalculateWinChance(tournament.Winner, tournament.Loser);
+
+            if (tournament.Winner != winner)
+            {
+                Team loser = tournament.Winner;
+
+                tournament.Winner = winner;
+                tournament.Loser = loser;
             }
 
             tournament.Winner.Wins += 1;
@@ -479,149 +529,35 @@ namespace BasketballOlympicsGame
             Console.Clear();
         }
 
-        public static void LoadDataManually()
+        public static Dictionary<string, List<MatchResult>> LoadExibitions()
         {
-            Team canada = new Team()
-            {
-                Name = "Kanada",
-                ISOCode = "CAN",
-                FIBARanking = 7,
-                GroupName = "A"
-            };
+            string json = File.ReadAllText("exibitions.json");
+            return JsonConvert.DeserializeObject<Dictionary<string, List<MatchResult>>>(json);
+        }
 
-            Team australia = new Team
-            {
-                Name = "Australija",
-                ISOCode = "AUS",
-                FIBARanking = 5,
-                GroupName = "A"
-            };
+        public static void LoadTeams()
+        {
+            string json = File.ReadAllText("groups.json");
+            Dictionary<string, List<Team>> dictionary = JsonConvert.DeserializeObject<Dictionary<string, List<Team>>>(json);
 
-            Team greece = new Team
+            foreach (KeyValuePair<string, List<Team>> keyValuePair in dictionary)
             {
-                Name = "Greece",
-                ISOCode = "GRE",
-                FIBARanking = 14,
-                GroupName = "A"
-            };
+                Group group = new Group
+                {
+                    Name = keyValuePair.Key,
+                    Teams = keyValuePair.Value
+                };
 
-            Team spain = new Team
+                Groups.Add(group);
+            }
+
+            foreach (Group group in Groups)
             {
-                Name = "Spain",
-                ISOCode = "ESP",
-                FIBARanking = 2,
-                GroupName = "A"
-            };
-
-            Team germany = new Team
-            {
-                Name = "Nemacka",
-                ISOCode = "DE",
-                FIBARanking = 3,
-                GroupName = "B"
-            };
-
-            Team france = new Team
-            {
-                Name = "Francuska",
-                ISOCode = "FRA",
-                FIBARanking = 9,
-                GroupName = "B"
-            };
-
-            Team brazil = new Team
-            {
-                Name = "Brazil",
-                ISOCode = "BRA",
-                FIBARanking = 12,
-                GroupName = "B"
-            };
-
-            Team japan = new Team
-            {
-                Name = "Japan",
-                ISOCode = "JPN",
-                FIBARanking = 26,
-                GroupName = "B"
-            };
-
-            Team usa = new Team
-            {
-                Name = "Sjedinjene Drzave",
-                ISOCode = "USA",
-                FIBARanking = 1,
-                GroupName = "C"
-            };
-
-            Team serbia = new Team
-            {
-                Name = "Srbija",
-                ISOCode = "SRB",
-                FIBARanking = 4,
-                GroupName = "C"
-            };
-
-            Team southSudan = new Team
-            {
-                Name = "Juzni Sudan",
-                ISOCode = "SSD",
-                FIBARanking = 34,
-                GroupName = "C"
-            };
-
-            Team puertoRico = new Team
-            {
-                Name = "Puerto Riko",
-                ISOCode = "PRI",
-                FIBARanking = 16,
-                GroupName = "C"
-            };
-
-            List<Team> groupATeams = new List<Team>()
-            {
-                canada,
-                australia,
-                greece,
-                spain
-            };
-
-            List<Team> groupBTeams = new List<Team>()
-            {
-                germany,
-                france,
-                brazil,
-                japan
-            };
-
-            List<Team> groupCTeams = new List<Team>()
-            {
-                usa,
-                serbia,
-                southSudan,
-                puertoRico
-            };
-
-            Group groupA = new Group
-            {
-                Name = "A",
-                Teams = groupATeams
-            };
-
-            Group groupB = new Group
-            {
-                Name = "B",
-                Teams = groupBTeams
-            };
-
-            Group groupC = new Group
-            {
-                Name = "C",
-                Teams = groupCTeams
-            };
-
-            Groups.Add(groupA);
-            Groups.Add(groupB);
-            Groups.Add(groupC);
+                foreach (Team team in group.Teams)
+                {
+                    team.GroupName = group.Name;
+                }
+            }
         }
     }
 }

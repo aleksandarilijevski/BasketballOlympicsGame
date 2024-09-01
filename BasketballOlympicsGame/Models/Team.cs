@@ -1,7 +1,10 @@
-﻿namespace BasketballOlympicsGame.Models
+﻿using Newtonsoft.Json;
+
+namespace BasketballOlympicsGame.Models
 {
     public class Team
     {
+        [JsonProperty("Team")]
         public string Name { get; set; }
 
         public string ISOCode { get; set; }
@@ -20,9 +23,11 @@
 
         public int TotalScoredPoints { get; set; }
 
-        public int TotalReceivedPoints {  get; set; }  
+        public int TotalReceivedPoints { get; set; }
 
         public string GroupName { get; set; }
+
+        public double Form { get; set; }
 
         public Team Clone()
         {
@@ -38,7 +43,8 @@
                 ReceivedPoints = this.ReceivedPoints,
                 TotalReceivedPoints = this.TotalReceivedPoints,
                 TotalScoredPoints = this.TotalScoredPoints,
-                GroupName = this.GroupName
+                GroupName = this.GroupName,
+                Form = this.Form,
             };
         }
     }
