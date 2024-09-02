@@ -5,25 +5,6 @@ namespace BasketballOlympicsGame.Helpers
 {
     public static class TournamentHelper
     {
-        public static void ApplyTotalScores(List<Group> groups, List<Tournament> tournamentHistory)
-        {
-            foreach (Group group in groups)
-            {
-                foreach (Team team in group.Teams)
-                {
-                    List<Tournament> tournaments = tournamentHistory
-                        .Where(x => x.Winner.Name == team.Name || x.Loser.Name == team.Name)
-                        .ToList();
-
-                    foreach (Tournament tournament in tournaments)
-                    {
-                        team.TotalScoredPoints += tournament.Winner.ScoredPoints;
-                        team.TotalReceivedPoints += tournament.Winner.ReceivedPoints;
-                    }
-                }
-            }
-        }
-
         public static void PlayTournamentInGroupPhase(List<Group> groups)
         {
             foreach (Group group in groups)
@@ -142,9 +123,9 @@ namespace BasketballOlympicsGame.Helpers
             return tournament;
         }
 
-        public static HatsModel MakeHatsModel(List<Team> plasman)
+        public static HatGroup CreateHatGroups(List<Team> plasman)
         {
-            HatsModel hats = new HatsModel
+            HatGroup hats = new HatGroup
             {
                 HatD = new List<Team> { plasman[0], plasman[1] },
                 HatE = new List<Team> { plasman[2], plasman[3] },
@@ -155,23 +136,23 @@ namespace BasketballOlympicsGame.Helpers
             return hats;
         }
 
-        public static TeamHatsModel EliminationPhase(HatsModel hatsModel)
+        public static TeamHatsModel EliminationPhase(HatGroup hatGroup)
         {
-            Team hatDteam1 = hatsModel.HatD[CalculationHelper.GenerateRandomNumber(0, 1)];
-            hatsModel.HatD.Remove(hatDteam1);
-            Team hatDteam2 = hatsModel.HatD[0];
+            Team hatDteam1 = hatGroup.HatD[CalculationHelper.GenerateRandomNumber(0, 1)];
+            hatGroup.HatD.Remove(hatDteam1);
+            Team hatDteam2 = hatGroup.HatD[0];
 
-            Team hatGteam1 = hatsModel.HatG[CalculationHelper.GenerateRandomNumber(0, 1)];
-            hatsModel.HatG.Remove(hatGteam1);
-            Team hatGteam2 = hatsModel.HatG[0];
+            Team hatGteam1 = hatGroup.HatG[CalculationHelper.GenerateRandomNumber(0, 1)];
+            hatGroup.HatG.Remove(hatGteam1);
+            Team hatGteam2 = hatGroup.HatG[0];
 
-            Team hatEteam1 = hatsModel.HatE[CalculationHelper.GenerateRandomNumber(0, 1)];
-            hatsModel.HatE.Remove(hatEteam1);
-            Team hatEteam2 = hatsModel.HatE[0];
+            Team hatEteam1 = hatGroup.HatE[CalculationHelper.GenerateRandomNumber(0, 1)];
+            hatGroup.HatE.Remove(hatEteam1);
+            Team hatEteam2 = hatGroup.HatE[0];
 
-            Team hatFteam1 = hatsModel.HatF[CalculationHelper.GenerateRandomNumber(0, 1)];
-            hatsModel.HatF.Remove(hatFteam1);
-            Team hatFteam2 = hatsModel.HatF[0];
+            Team hatFteam1 = hatGroup.HatF[CalculationHelper.GenerateRandomNumber(0, 1)];
+            hatGroup.HatF.Remove(hatFteam1);
+            Team hatFteam2 = hatGroup.HatF[0];
 
             TeamHatsModel teamHatsModel = new TeamHatsModel
             {
@@ -188,7 +169,69 @@ namespace BasketballOlympicsGame.Helpers
             return teamHatsModel;
         }
 
-        public static bool IfTournamentPlayedInGroupPhase(Team teamA, Team teamB)
+        public static Quarterfinals PlayQuarterfinals(TeamHatsModel teamHatsModel)
+        {
+            Tournament tournamentDG1 = RandomMatchState(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
+            Tournament tournamentDG2 = RandomMatchState(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
+            Tournament tournamentEF1 = RandomMatchState(teamHatsModel.HatTeamE1, teamHatsModel.HatTeamF1);
+            Tournament tournamentEF2 = RandomMatchState(teamHatsModel.HatTeamE2, teamHatsModel.HatTeamF2);
+
+            Quarterfinals quarterfinals = new Quarterfinals
+            {
+                DG1 = tournamentDG1,
+                DG2 = tournamentDG2,
+                EF1 = tournamentEF1,
+                EF2 = tournamentEF2
+            };
+
+            return quarterfinals;
+        }
+
+        public static Semifinals PlaySemifinals(Quarterfinals quarterfinals)
+        {
+            Tournament firstSemiFinals = RandomMatchState(quarterfinals.DG1.Winner, quarterfinals.EF1.Winner);
+            Tournament secondSemiFinals = RandomMatchState(quarterfinals.EF2.Winner, quarterfinals.DG2.Winner);
+
+            Semifinals semifinals = new Semifinals
+            {
+                FirstSemifinals = firstSemiFinals,
+                SecondSemifinals = secondSemiFinals
+            };
+
+            return semifinals;
+        }
+
+        public static Tournament PlayTournamentForThirdplace(Semifinals semifinals)
+        {
+            Tournament finals = RandomMatchState(semifinals.FirstSemifinals.Loser, semifinals.SecondSemifinals.Loser);
+            return finals;
+        }
+
+        public static Tournament PlayFinals(Semifinals semifinals)
+        {
+            return RandomMatchState(semifinals.FirstSemifinals.Winner, semifinals.SecondSemifinals.Winner);
+        }
+
+        public static void ApplyTotalScores(List<Group> groups, List<Tournament> tournamentHistory)
+        {
+            foreach (Group group in groups)
+            {
+                foreach (Team team in group.Teams)
+                {
+                    List<Tournament> tournaments = tournamentHistory
+                        .Where(x => x.Winner.Name == team.Name || x.Loser.Name == team.Name)
+                        .ToList();
+
+                    foreach (Tournament tournament in tournaments)
+                    {
+                        team.TotalScoredPoints += tournament.Winner.ScoredPoints;
+                        team.TotalReceivedPoints += tournament.Winner.ReceivedPoints;
+                    }
+                }
+            }
+        }
+
+        private static bool IfTournamentPlayedInGroupPhase(Team teamA, Team teamB)
         {
             Tournament tournamentFind = Program.TournamentHistory.FirstOrDefault(x => (x.Winner.Name == teamA.Name && x.Loser.Name == teamB.Name) || (x.Winner.Name == teamB.Name && x.Loser.Name == teamA.Name));
 
@@ -200,28 +243,7 @@ namespace BasketballOlympicsGame.Helpers
             return false;
         }
 
-        public static void SwapTeams(SwapTeamsModel swapTeamsModel)
-        {
-            bool alreadyPlayed = true;
-
-            List<Team> allHatsTeams =
-            [
-                ..swapTeamsModel.HatD,
-                ..swapTeamsModel.HatE,
-                ..swapTeamsModel.HatF,
-                ..swapTeamsModel.HatG
-            ];
-
-            do
-            {
-                int randomNumber = CalculationHelper.GenerateRandomNumber(0, allHatsTeams.Count - 1);
-                swapTeamsModel.TeamB = allHatsTeams[randomNumber];
-
-                alreadyPlayed = IfTournamentPlayedInGroupPhase(swapTeamsModel.TeamA, swapTeamsModel.TeamB);
-            } while (alreadyPlayed == true);
-        }
-
-        public static void CheckIfTeamsPlayedInGroupPhase(TeamHatsModel teamHatsModel, HatsModel hatsModel)
+        public static void CheckIfTeamsPlayedInGroupPhase(TeamHatsModel teamHatsModel, HatGroup hatsModel)
         {
             bool dg1 = IfTournamentPlayedInGroupPhase(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
             bool dg2 = IfTournamentPlayedInGroupPhase(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
@@ -265,51 +287,25 @@ namespace BasketballOlympicsGame.Helpers
             }
         }
 
-        public static Quarterfinals PlayQuarterfinals(TeamHatsModel teamHatsModel)
+        private static void SwapTeams(SwapTeamsModel swapTeamsModel)
         {
-            Tournament tournamentDG1 = RandomMatchState(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
-            Tournament tournamentDG2 = RandomMatchState(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
-            Tournament tournamentEF1 = RandomMatchState(teamHatsModel.HatTeamE1, teamHatsModel.HatTeamF1);
-            Tournament tournamentEF2 = RandomMatchState(teamHatsModel.HatTeamE2, teamHatsModel.HatTeamF2);
+            bool alreadyPlayed = true;
 
-            Quarterfinals quarterfinals = new Quarterfinals
+            List<Team> allHatsTeams =
+            [
+                ..swapTeamsModel.HatD,
+                ..swapTeamsModel.HatE,
+                ..swapTeamsModel.HatF,
+                ..swapTeamsModel.HatG
+            ];
+
+            do
             {
-                DG1 = tournamentDG1,
-                DG2 = tournamentDG2,
-                EF1 = tournamentEF1,
-                EF2 = tournamentEF2
-            };
+                int randomNumber = CalculationHelper.GenerateRandomNumber(0, allHatsTeams.Count - 1);
+                swapTeamsModel.TeamB = allHatsTeams[randomNumber];
 
-            return quarterfinals;
-        }
-
-        public static Semifinals PlaySemifinals(Quarterfinals quarterfinals)
-        {
-            Console.WriteLine("Pobednik iz prve utakmice VS pobednik iz trece utakmice");
-            Console.WriteLine("Pobednik iz druge utakmice VS pobednik iz cetvrte utakmice");
-            Console.WriteLine();
-
-            Tournament firstSemiFinals = RandomMatchState(quarterfinals.DG1.Winner, quarterfinals.EF1.Winner);
-            Tournament secondSemiFinals = RandomMatchState(quarterfinals.EF2.Winner, quarterfinals.DG2.Winner);
-
-            Semifinals semifinals = new Semifinals
-            {
-                FirstSemifinals = firstSemiFinals,
-                SecondSemifinals = secondSemiFinals
-            };
-
-            return semifinals;
-        }
-
-        public static Tournament PlayTournamentForThirdplace(Semifinals semifinals)
-        {
-            Tournament finals = RandomMatchState(semifinals.FirstSemifinals.Loser, semifinals.SecondSemifinals.Loser);
-            return finals;
-        }
-
-        public static Tournament PlayFinals(Semifinals semifinals)
-        {
-            return RandomMatchState(semifinals.FirstSemifinals.Winner, semifinals.SecondSemifinals.Winner);
+                alreadyPlayed = IfTournamentPlayedInGroupPhase(swapTeamsModel.TeamA, swapTeamsModel.TeamB);
+            } while (alreadyPlayed == true);
         }
     }
 }

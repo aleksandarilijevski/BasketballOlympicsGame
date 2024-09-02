@@ -10,7 +10,7 @@ namespace BasketballOlympicsGame.Helpers
             TournamentHelper.ApplyTotalScores(groups, tournamentHistory);
 
             Remove3WorstTeams(groups);
-            DisplayDataHelper.PressAnyKeyToContinue("Press any key to continue...");
+            DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme za nastavak");
 
             List<Team> allTeams = new List<Team>();
 
@@ -70,7 +70,7 @@ namespace BasketballOlympicsGame.Helpers
             return plasman;
         }
 
-        public static void Remove3WorstTeams(List<Group> groups)
+        private static void Remove3WorstTeams(List<Group> groups)
         {
             foreach (Group group in groups)
             {
@@ -82,7 +82,7 @@ namespace BasketballOlympicsGame.Helpers
                 Team worstTeam = group.Teams
                     .FirstOrDefault(x => x.Name == worstGroupTeam.Name);
 
-                Console.WriteLine(worstTeam.Name + " je diskvalifikovan/a!");
+                Console.WriteLine(worstTeam.Name + " nije prošla u sledeću fazu utakmica!");
 
                 group.Teams.Remove(worstTeam);
             }

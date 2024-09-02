@@ -1,4 +1,5 @@
-﻿using BasketballOlympicsGame.Models;
+﻿using BasketballOlympicsGame.Helpers;
+using BasketballOlympicsGame.Models;
 
 namespace BasketballOlympicsGame.Helper
 {
@@ -6,29 +7,29 @@ namespace BasketballOlympicsGame.Helper
     {
         public static void DisplayHats(List<Team> hatD, List<Team> hatE, List<Team> hatF, List<Team> hatG)
         {
-            Console.WriteLine("Sesiri : ");
+            Console.WriteLine("Šeširi : ");
 
             Console.WriteLine();
 
-            Console.WriteLine("Sesir D");
+            Console.WriteLine("Šešir D");
             Console.WriteLine(hatD[0].Name);
             Console.WriteLine(hatD[1].Name);
 
             Console.WriteLine();
 
-            Console.WriteLine("Sesir E");
+            Console.WriteLine("Šešir E");
             Console.WriteLine(hatE[0].Name);
             Console.WriteLine(hatE[1].Name);
 
             Console.WriteLine();
 
-            Console.WriteLine("Sesir F");
+            Console.WriteLine("Šešir F");
             Console.WriteLine(hatF[0].Name);
             Console.WriteLine(hatF[1].Name);
 
             Console.WriteLine();
 
-            Console.WriteLine("Sesir G");
+            Console.WriteLine("Šešir G");
             Console.WriteLine(hatG[0].Name);
             Console.WriteLine(hatG[1].Name);
         }
@@ -56,7 +57,7 @@ namespace BasketballOlympicsGame.Helper
                 Console.WriteLine("Points : " + team.Points);
                 Console.WriteLine("Total scored points : " + team.TotalScoredPoints);
                 Console.WriteLine("Total received points : " + team.TotalReceivedPoints);
-                Console.WriteLine("Kos razlika : " + (team.TotalScoredPoints - team.TotalReceivedPoints));
+                Console.WriteLine("Koš razlika : " + (team.TotalScoredPoints - team.TotalReceivedPoints));
                 Console.WriteLine("--------------------------------------------------------------------------------");
                 ranking++;
             }
@@ -106,29 +107,62 @@ namespace BasketballOlympicsGame.Helper
 
         public static void DisplayWinnerForThirdPlace(Semifinals semifinals)
         {
-            Console.WriteLine("Utakmica za trece mesto : \n");
+            Console.WriteLine("Utakmica za treće mesto : \n");
             Console.WriteLine($"{semifinals.FirstSemifinals.Loser.Name} VS {semifinals.SecondSemifinals.Loser.Name}");
         }
 
         public static void DisplayWinnerForThirdPlaceMatchStatus(Tournament thirdPlace)
         {
-            Console.WriteLine("Utakmica za trece mesto : \n");
+            Console.WriteLine("Utakmica za treće mesto : \n");
             Console.WriteLine($"{thirdPlace.Winner.Name} VS {thirdPlace.Loser.Name}\n Winner : {thirdPlace.Winner.Name}\n Score ({thirdPlace.Winner.ScoredPoints}:{thirdPlace.Loser.ScoredPoints})\n");
         }
 
         public static void DisplayQuarterfinals(TeamHatsModel teamHatsModel)
         {
-            Console.WriteLine("Cetvrtfinale : \n");
+            Console.WriteLine("Četvrtfinale : \n");
             Console.WriteLine($"{teamHatsModel.HatTeamD1.Name} VS {teamHatsModel.HatTeamG1.Name}");
             Console.WriteLine($"{teamHatsModel.HatTeamD2.Name} VS {teamHatsModel.HatTeamG2.Name}");
             Console.WriteLine();
             Console.WriteLine($"{teamHatsModel.HatTeamE1.Name} VS {teamHatsModel.HatTeamF1.Name}");
             Console.WriteLine($"{teamHatsModel.HatTeamE2.Name} VS {teamHatsModel.HatTeamF2.Name}");
+
+            Tournament tournamentDG1 = TournamentHelper.RandomMatchState(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
+            Tournament tournamentDG2 = TournamentHelper.RandomMatchState(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
+            Tournament tournamentEF1 = TournamentHelper.RandomMatchState(teamHatsModel.HatTeamE1, teamHatsModel.HatTeamF1);
+            Tournament tournamentEF2 = TournamentHelper.RandomMatchState(teamHatsModel.HatTeamE2, teamHatsModel.HatTeamF2);
+
+            List<Tournament> tournaments = new List<Tournament>
+            {
+                tournamentDG1,
+                tournamentDG2,
+                tournamentEF1,
+                tournamentEF2
+            };
+
+            Console.WriteLine();
+            int randomTeam = CalculationHelper.GenerateRandomNumber(2, 4);
+
+            if (randomTeam == 2)
+            {
+                Console.WriteLine("Pobednik prve utakmice VS pobednik iz treće utakmice");
+                Console.WriteLine("Pobednik druge utakmice VS pobednik iz četvrte utakmice");
+            }
+
+            if (randomTeam == 3)
+            {
+                Console.WriteLine("Pobednik prve utakmice VS pobednik iz četvrte utakmice");
+                Console.WriteLine("Pobednik druge utakmice VS pobednik iz treće utakmice");
+            }
+
+            Program.TournamentHistory.Remove(tournamentDG1);
+            Program.TournamentHistory.Remove(tournamentDG2);
+            Program.TournamentHistory.Remove(tournamentEF1);
+            Program.TournamentHistory.Remove(tournamentEF2);
         }
 
         public static void DisplayQuarterfinalsMatchStatus(Quarterfinals quarterfinals)
         {
-            Console.WriteLine("Cetvrtfinale : \n");
+            Console.WriteLine("Četvrtfinale : \n");
             Console.WriteLine($"{quarterfinals.DG1.Winner.Name} VS {quarterfinals.DG1.Loser.Name}\n Winner : {quarterfinals.DG1.Winner.Name}\n Score ({quarterfinals.DG1.Winner.ScoredPoints}:{quarterfinals.DG1.Loser.ScoredPoints})\n");
             Console.WriteLine($"{quarterfinals.DG2.Winner.Name} VS {quarterfinals.DG2.Loser.Name}\n Winner : {quarterfinals.DG2.Winner.Name}\n Score ({quarterfinals.DG2.Winner.ScoredPoints}:{quarterfinals.DG2.Loser.ScoredPoints})\n");
             Console.WriteLine($"{quarterfinals.EF1.Winner.Name} VS {quarterfinals.EF1.Loser.Name}\n Winner : {quarterfinals.EF1.Winner.Name}\n Score ({quarterfinals.EF1.Winner.ScoredPoints}:{quarterfinals.EF1.Loser.ScoredPoints})\n");

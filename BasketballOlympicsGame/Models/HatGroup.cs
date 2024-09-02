@@ -1,6 +1,6 @@
 ﻿namespace BasketballOlympicsGame.Models
 {
-    public class HatsModel
+    public class HatGroup
     {
         public List<Team> HatD { get; set; }
 
