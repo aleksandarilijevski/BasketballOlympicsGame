@@ -285,6 +285,10 @@ namespace BasketballOlympicsGame.Helpers
 
         public static Semifinals PlaySemifinals(Quarterfinals quarterfinals)
         {
+            Console.WriteLine("Pobednik iz prve utakmice VS pobednik iz trece utakmice");
+            Console.WriteLine("Pobednik iz druge utakmice VS pobednik iz cetvrte utakmice");
+            Console.WriteLine();
+
             Tournament firstSemiFinals = RandomMatchState(quarterfinals.DG1.Winner, quarterfinals.EF1.Winner);
             Tournament secondSemiFinals = RandomMatchState(quarterfinals.EF2.Winner, quarterfinals.DG2.Winner);
 

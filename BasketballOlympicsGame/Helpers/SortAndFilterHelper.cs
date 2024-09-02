@@ -10,7 +10,7 @@ namespace BasketballOlympicsGame.Helpers
             TournamentHelper.ApplyTotalScores(groups, tournamentHistory);
 
             Remove3WorstTeams(groups);
-            DisplayDataOnConsoleHelper.PressAnyKeyToContinue("Press any key to continue...");
+            DisplayDataHelper.PressAnyKeyToContinue("Press any key to continue...");
 
             List<Team> allTeams = new List<Team>();
 
@@ -82,7 +82,7 @@ namespace BasketballOlympicsGame.Helpers
                 Team worstTeam = group.Teams
                     .FirstOrDefault(x => x.Name == worstGroupTeam.Name);
 
-                Console.WriteLine(worstTeam.Name + " has been disqualified!");
+                Console.WriteLine(worstTeam.Name + " je diskvalifikovan/a!");
 
                 group.Teams.Remove(worstTeam);
             }
