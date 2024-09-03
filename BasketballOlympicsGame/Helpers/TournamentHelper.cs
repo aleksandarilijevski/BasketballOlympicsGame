@@ -231,7 +231,7 @@ namespace BasketballOlympicsGame.Helpers
             }
         }
 
-        private static bool IfTournamentPlayedInGroupPhase(Team teamA, Team teamB)
+        private static bool WasGameAlreadyPlayedInGroupPhase(Team teamA, Team teamB)
         {
             Tournament tournamentFind = Program.TournamentHistory.FirstOrDefault(x => (x.Winner.Name == teamA.Name && x.Loser.Name == teamB.Name) || (x.Winner.Name == teamB.Name && x.Loser.Name == teamA.Name));
 
@@ -245,10 +245,10 @@ namespace BasketballOlympicsGame.Helpers
 
         public static void CheckIfTeamsPlayedInGroupPhase(TeamHatsModel teamHatsModel, HatGroup hatsModel)
         {
-            bool dg1 = IfTournamentPlayedInGroupPhase(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
-            bool dg2 = IfTournamentPlayedInGroupPhase(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
-            bool ef1 = IfTournamentPlayedInGroupPhase(teamHatsModel.HatTeamE1, teamHatsModel.HatTeamF1);
-            bool ef2 = IfTournamentPlayedInGroupPhase(teamHatsModel.HatTeamE2, teamHatsModel.HatTeamF2);
+            bool dg1AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
+            bool dg2AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
+            bool ef1AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamE1, teamHatsModel.HatTeamF1);
+            bool ef2AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamE2, teamHatsModel.HatTeamF2);
 
             SwapTeamsModel swapTeamsModel = new SwapTeamsModel
             {
@@ -258,28 +258,28 @@ namespace BasketballOlympicsGame.Helpers
                 HatG = hatsModel.HatG
             };
 
-            if (dg1)
+            if (dg1AlreadyPlayed)
             {
                 swapTeamsModel.TeamA = teamHatsModel.HatTeamD1;
                 swapTeamsModel.TeamB = teamHatsModel.HatTeamG1;
                 SwapTeams(swapTeamsModel);
             }
 
-            if (dg2)
+            if (dg2AlreadyPlayed)
             {
                 swapTeamsModel.TeamA = teamHatsModel.HatTeamD2;
                 swapTeamsModel.TeamB = teamHatsModel.HatTeamG2;
                 SwapTeams(swapTeamsModel);
             }
 
-            if (ef1)
+            if (ef1AlreadyPlayed)
             {
                 swapTeamsModel.TeamA = teamHatsModel.HatTeamE1;
                 swapTeamsModel.TeamB = teamHatsModel.HatTeamF1;
                 SwapTeams(swapTeamsModel);
             }
 
-            if (ef2)
+            if (ef2AlreadyPlayed)
             {
                 swapTeamsModel.TeamA = teamHatsModel.HatTeamE2;
                 swapTeamsModel.TeamB = teamHatsModel.HatTeamF2;
@@ -304,7 +304,7 @@ namespace BasketballOlympicsGame.Helpers
                 int randomNumber = CalculationHelper.GenerateRandomNumber(0, allHatsTeams.Count - 1);
                 swapTeamsModel.TeamB = allHatsTeams[randomNumber];
 
-                alreadyPlayed = IfTournamentPlayedInGroupPhase(swapTeamsModel.TeamA, swapTeamsModel.TeamB);
+                alreadyPlayed = WasGameAlreadyPlayedInGroupPhase(swapTeamsModel.TeamA, swapTeamsModel.TeamB);
             } while (alreadyPlayed == true);
         }
     }
