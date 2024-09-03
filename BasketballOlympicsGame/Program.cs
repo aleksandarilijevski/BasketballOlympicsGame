@@ -42,7 +42,7 @@ namespace BasketballOlympicsGame
 
             DisplayDataHelper.DisplayHats(hatsGriyo.HatD, hatsGriyo.HatE, hatsGriyo.HatF, hatsGriyo.HatG);
 
-            TeamHatsModel teamHatsModel = TournamentHelper.EliminationPhase(hatsGriyo);
+            TeamHats teamHatsModel = TournamentHelper.EliminationPhase(hatsGriyo);
             DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme da odete na prikaz eliminacione faze");
 
             DisplayDataHelper.DisplayEliminationPhase(teamHatsModel);

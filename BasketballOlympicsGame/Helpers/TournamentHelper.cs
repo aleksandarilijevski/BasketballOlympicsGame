@@ -136,7 +136,7 @@ namespace BasketballOlympicsGame.Helpers
             return hats;
         }
 
-        public static TeamHatsModel EliminationPhase(HatGroup hatGroup)
+        public static TeamHats EliminationPhase(HatGroup hatGroup)
         {
             Team hatDteam1 = hatGroup.HatD[CalculationHelper.GenerateRandomNumber(0, 1)];
             hatGroup.HatD.Remove(hatDteam1);
@@ -154,7 +154,7 @@ namespace BasketballOlympicsGame.Helpers
             hatGroup.HatF.Remove(hatFteam1);
             Team hatFteam2 = hatGroup.HatF[0];
 
-            TeamHatsModel teamHatsModel = new TeamHatsModel
+            TeamHats teamHatsModel = new TeamHats
             {
                 HatTeamD1 = hatDteam1,
                 HatTeamD2 = hatDteam2,
@@ -169,7 +169,7 @@ namespace BasketballOlympicsGame.Helpers
             return teamHatsModel;
         }
 
-        public static Quarterfinals PlayQuarterfinals(TeamHatsModel teamHatsModel)
+        public static Quarterfinals PlayQuarterfinals(TeamHats teamHatsModel)
         {
             Tournament tournamentDG1 = RandomMatchState(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
             Tournament tournamentDG2 = RandomMatchState(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
@@ -243,51 +243,51 @@ namespace BasketballOlympicsGame.Helpers
             return false;
         }
 
-        public static void CheckIfTeamsPlayedInGroupPhase(TeamHatsModel teamHatsModel, HatGroup hatsModel)
+        public static void CheckIfTeamsPlayedInGroupPhase(TeamHats teamHats, HatGroup hatGroup)
         {
-            bool dg1AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamD1, teamHatsModel.HatTeamG1);
-            bool dg2AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamD2, teamHatsModel.HatTeamG2);
-            bool ef1AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamE1, teamHatsModel.HatTeamF1);
-            bool ef2AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHatsModel.HatTeamE2, teamHatsModel.HatTeamF2);
+            bool dg1AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHats.HatTeamD1, teamHats.HatTeamG1);
+            bool dg2AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHats.HatTeamD2, teamHats.HatTeamG2);
+            bool ef1AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHats.HatTeamE1, teamHats.HatTeamF1);
+            bool ef2AlreadyPlayed = WasGameAlreadyPlayedInGroupPhase(teamHats.HatTeamE2, teamHats.HatTeamF2);
 
-            SwapTeamsModel swapTeamsModel = new SwapTeamsModel
+            SwapTeams swapTeamsModel = new SwapTeams
             {
-                HatD = hatsModel.HatD,
-                HatE = hatsModel.HatE,
-                HatF = hatsModel.HatF,
-                HatG = hatsModel.HatG
+                HatD = hatGroup.HatD,
+                HatE = hatGroup.HatE,
+                HatF = hatGroup.HatF,
+                HatG = hatGroup.HatG
             };
 
             if (dg1AlreadyPlayed)
             {
-                swapTeamsModel.TeamA = teamHatsModel.HatTeamD1;
-                swapTeamsModel.TeamB = teamHatsModel.HatTeamG1;
+                swapTeamsModel.TeamA = teamHats.HatTeamD1;
+                swapTeamsModel.TeamB = teamHats.HatTeamG1;
                 SwapTeams(swapTeamsModel);
             }
 
             if (dg2AlreadyPlayed)
             {
-                swapTeamsModel.TeamA = teamHatsModel.HatTeamD2;
-                swapTeamsModel.TeamB = teamHatsModel.HatTeamG2;
+                swapTeamsModel.TeamA = teamHats.HatTeamD2;
+                swapTeamsModel.TeamB = teamHats.HatTeamG2;
                 SwapTeams(swapTeamsModel);
             }
 
             if (ef1AlreadyPlayed)
             {
-                swapTeamsModel.TeamA = teamHatsModel.HatTeamE1;
-                swapTeamsModel.TeamB = teamHatsModel.HatTeamF1;
+                swapTeamsModel.TeamA = teamHats.HatTeamE1;
+                swapTeamsModel.TeamB = teamHats.HatTeamF1;
                 SwapTeams(swapTeamsModel);
             }
 
             if (ef2AlreadyPlayed)
             {
-                swapTeamsModel.TeamA = teamHatsModel.HatTeamE2;
-                swapTeamsModel.TeamB = teamHatsModel.HatTeamF2;
+                swapTeamsModel.TeamA = teamHats.HatTeamE2;
+                swapTeamsModel.TeamB = teamHats.HatTeamF2;
                 SwapTeams(swapTeamsModel);
             }
         }
 
-        private static void SwapTeams(SwapTeamsModel swapTeamsModel)
+        private static void SwapTeams(SwapTeams swapTeamsModel)
         {
             bool alreadyPlayed = true;
 

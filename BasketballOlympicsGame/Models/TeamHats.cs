@@ -1,6 +1,6 @@
 ﻿namespace BasketballOlympicsGame.Models
 {
-    public class TeamHatsModel
+    public class TeamHats
     {
         public Team HatTeamD1 { get; set; }
 
