@@ -91,7 +91,6 @@ namespace BasketballOlympicsGame
             DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme da bi prikazali top 3 tima");
             DisplayDataHelper.DisplayTop3Teams(top3Teams);
 
-            Environment.Exit(0);
             DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme za izlazak iz programa");
         }
     }
