@@ -11,25 +11,25 @@ namespace BasketballOlympicsGame.Helper
 
             Console.WriteLine();
 
-            Console.WriteLine("Šešir D");
+            Console.WriteLine("Šešir D\n");
             Console.WriteLine(hatD[0].Name);
             Console.WriteLine(hatD[1].Name);
 
             Console.WriteLine();
 
-            Console.WriteLine("Šešir E");
+            Console.WriteLine("Šešir E\n");
             Console.WriteLine(hatE[0].Name);
             Console.WriteLine(hatE[1].Name);
 
             Console.WriteLine();
 
-            Console.WriteLine("Šešir F");
+            Console.WriteLine("Šešir F\n");
             Console.WriteLine(hatF[0].Name);
             Console.WriteLine(hatF[1].Name);
 
             Console.WriteLine();
 
-            Console.WriteLine("Šešir G");
+            Console.WriteLine("Šešir G\n");
             Console.WriteLine(hatG[0].Name);
             Console.WriteLine(hatG[1].Name);
         }
@@ -84,18 +84,14 @@ namespace BasketballOlympicsGame.Helper
 
         public static void DisplayTop3Teams(List<Team> top3Teams)
         {
-            int ranking = 1;
-
-            foreach (Team team in top3Teams)
-            {
-                Console.WriteLine($"{ranking}.{team.Name}");
-                ranking++;
-            }
+            Console.WriteLine($"{top3Teams[0].Name} (Zlato)");
+            Console.WriteLine($"{top3Teams[1].Name} (Srebro)");
+            Console.WriteLine($"{top3Teams[2].Name} (Bronza)");
         }
 
         public static void DisplayEliminationPhase(TeamHatsModel teamHatsModel)
         {
-            Console.WriteLine("Eliminaciona faza : ");
+            Console.WriteLine("Eliminaciona faza : \n");
             Console.WriteLine(teamHatsModel.HatTeamD1.Name + " - " + teamHatsModel.HatTeamG1.Name);
             Console.WriteLine(teamHatsModel.HatTeamD2.Name + " - " + teamHatsModel.HatTeamG2.Name);
 
@@ -140,15 +136,16 @@ namespace BasketballOlympicsGame.Helper
             };
 
             Console.WriteLine();
-            int randomTeam = CalculationHelper.GenerateRandomNumber(2, 4);
+            Console.WriteLine("Polufinale - Kostur :");
+            int randomTeam = CalculationHelper.GenerateRandomNumber(1, 2);
 
-            if (randomTeam == 2)
+            if (randomTeam == 1)
             {
                 Console.WriteLine("Pobednik prve utakmice VS pobednik iz treće utakmice");
                 Console.WriteLine("Pobednik druge utakmice VS pobednik iz četvrte utakmice");
             }
 
-            if (randomTeam == 3)
+            if (randomTeam == 2)
             {
                 Console.WriteLine("Pobednik prve utakmice VS pobednik iz četvrte utakmice");
                 Console.WriteLine("Pobednik druge utakmice VS pobednik iz treće utakmice");

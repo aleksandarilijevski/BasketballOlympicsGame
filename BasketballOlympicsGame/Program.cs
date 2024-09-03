@@ -23,10 +23,10 @@ namespace BasketballOlympicsGame
             DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme za nastavak");
 
             DisplayDataHelper.DisplayGroupPhase(Groups);
-            DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme za prikaz rezultat ekipa koje nisu uspele da prodju dalju fazu utakmice");
+            DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme da bi se odigrale utakmice");
 
             TournamentHelper.PlayTournamentInGroupPhase(Groups);
-            DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme za prikaz plasmana");
+            DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme za prikaz timova koji nisu uspeli da odu dalje");
 
             List<Team> plasman = SortAndFilterHelper.GetBestGroupTeams(Groups, TournamentHistory, SortedGroupsTeam);
             DisplayDataHelper.DisplayPlasman(plasman);
@@ -38,11 +38,11 @@ namespace BasketballOlympicsGame
             Console.WriteLine($"9.{plasman[plasman.Count - 1].Name} je izbačen/a");
             DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme da odete na prikaz šešira");
 
-            HatGroup hatsModel = TournamentHelper.CreateHatGroups(plasman);
+            HatGroup hatsGriyo = TournamentHelper.CreateHatGroups(plasman);
 
-            DisplayDataHelper.DisplayHats(hatsModel.HatD, hatsModel.HatE, hatsModel.HatF, hatsModel.HatG);
+            DisplayDataHelper.DisplayHats(hatsGriyo.HatD, hatsGriyo.HatE, hatsGriyo.HatF, hatsGriyo.HatG);
 
-            TeamHatsModel teamHatsModel = TournamentHelper.EliminationPhase(hatsModel);
+            TeamHatsModel teamHatsModel = TournamentHelper.EliminationPhase(hatsGriyo);
             DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme da odete na prikaz eliminacione faze");
 
             DisplayDataHelper.DisplayEliminationPhase(teamHatsModel);
@@ -51,7 +51,7 @@ namespace BasketballOlympicsGame
             DisplayDataHelper.DisplayQuarterfinals(teamHatsModel);
             DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme da bi timovi iz četvrtfinala odigrali utakmice");
 
-            TournamentHelper.CheckIfTeamsPlayedInGroupPhase(teamHatsModel, hatsModel);
+            TournamentHelper.CheckIfTeamsPlayedInGroupPhase(teamHatsModel, hatsGriyo);
             Quarterfinals quarterfinals = TournamentHelper.PlayQuarterfinals(teamHatsModel);
 
             DisplayDataHelper.DisplayQuarterfinalsMatchStatus(quarterfinals);
@@ -92,6 +92,7 @@ namespace BasketballOlympicsGame
             DisplayDataHelper.DisplayTop3Teams(top3Teams);
 
             Environment.Exit(0);
+            DisplayDataHelper.PressAnyKeyToContinue("Pritisnite bilo koje dugme za izlazak iz programa");
         }
     }
 }
