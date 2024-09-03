@@ -9,8 +9,8 @@ namespace BasketballOlympicsGame.Helpers
         {
             List<Team> teams = new List<Team>();
 
-            double hostChance = (1.0 / host.FIBARanking) + CalculateTeamFrom(host.ISOCode);
-            double guestChance = (1.0 / guest.FIBARanking) + CalculateTeamFrom(guest.ISOCode);
+            double hostChance = (1.0 / host.FIBARanking) + CalculateTeamForm(host.ISOCode);
+            double guestChance = (1.0 / guest.FIBARanking) + CalculateTeamForm(guest.ISOCode);
 
             double totalChance = hostChance + guestChance;
 
@@ -36,7 +36,7 @@ namespace BasketballOlympicsGame.Helpers
             return random.Next(from, to);
         }
 
-        public static double CalculateTeamFrom(string isoCode)
+        public static double CalculateTeamForm(string isoCode)
         {
             double form = 0.0;
 
